@@ -16,7 +16,7 @@
 
         <!-- Category has a parent Category -->
         <many-to-one field="parent" target-entity="TomoPongrac\WebshopApiBundle\Entity\Category" inversed-by="children">
-            <join-column name="parent_id" referencedColumnName="id" nullable="true"/>
+            <join-column name="parent_id" referenced-column-name="id" nullable="true"/>
         </many-to-one>
 
         <!-- Category has many child Categories -->
