@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                  https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+    <entity name="TomoPongrac\WebshopApiBundle\Entity\Category" table="category">
+        <id name="id" type="integer" column="id">
+            <generator strategy="AUTO"/>
+        </id>
+        <field name="name" type="string" column="name" length="255" nullable="false" />
+        <field name="description" type="text" column="description" nullable="true" />
+
+        <!-- Timestampable fields -->
+        <field name="createdAt" type="datetime" column="created_at" nullable="false" />
+        <field name="updatedAt" type="datetime" column="updated_at" nullable="true" />
+
+        <!-- Category has a parent Category -->
+        <many-to-one field="parent" target-entity="TomoPongrac\WebshopApiBundle\Entity\Category" inversed-by="children">
+            <join-column name="parent_id" referencedColumnName="id" nullable="true"/>
+        </many-to-one>
+
+        <!-- Category has many child Categories -->
+        <one-to-many field="children" target-entity="TomoPongrac\WebshopApiBundle\Entity\Category" mapped-by="parent" />
+    </entity>
+</doctrine-mapping>
