@@ -21,5 +21,10 @@
         "phpstan/phpstan-strict-rules": "^1.5",
         "phpstan/phpstan-symfony": "^1.3",
         "friendsofphp/php-cs-fixer": "^3.50"
+    },
+    "scripts": {
+        "cs-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
+        "cs-fix": "vendor/bin/php-cs-fixer fix -v",
+        "phpstan": "vendor/bin/phpstan analyse --no-progress"
     }
 }
