@@ -9,6 +9,8 @@ use Doctrine\Common\Collections\Collection;
 
 class Category
 {
+    use TimestampableTrait;
+
     private ?int $id = null;
 
     private string $name;
