@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace TomoPongrac\WebshopApi;
+namespace TomoPongrac\WebshopApiBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class WebShopApiBundle extends Bundle
+class WebshopApiBundle extends Bundle
 {
     public function getPath(): string
     {
