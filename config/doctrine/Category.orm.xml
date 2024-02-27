@@ -21,5 +21,10 @@
 
         <!-- Category has many child Categories -->
         <one-to-many field="children" target-entity="TomoPongrac\WebshopApiBundle\Entity\Category" mapped-by="parent" />
+
+        <lifecycle-callbacks>
+            <lifecycle-callback type="prePersist" method="onCreate"/>
+            <lifecycle-callback type="preUpdate" method="onUpdate"/>
+        </lifecycle-callbacks>
     </entity>
 </doctrine-mapping>
