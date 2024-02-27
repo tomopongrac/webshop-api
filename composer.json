@@ -1,0 +1,19 @@
+{
+    "name": "tomopongrac/webshop-api",
+    "description": "Simple webshop API",
+    "type": "symfony-bundle",
+    "autoload": {
+        "psr-4": {
+            "TomoPongrac\\WebshopApi\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Tomislav Pongrac"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "symfony/http-kernel": "^7.0"
+    }
+}
