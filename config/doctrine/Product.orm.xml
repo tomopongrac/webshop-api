@@ -17,6 +17,11 @@
         <field name="createdAt" type="datetime" column="created_at" nullable="false" />
         <field name="updatedAt" type="datetime" column="updated_at" nullable="true" />
 
+        <!-- Product have one TaxCategory -->
+        <many-to-one field="taxCategory" target-entity="TomoPongrac\WebshopApiBundle\Entity\TaxCategory">
+            <join-column name="tax_category_id" referenced-column-name="id" nullable="false"/>
+        </many-to-one>
+
         <!-- Product has many Categories -->
         <many-to-many field="categories" target-entity="TomoPongrac\WebshopApiBundle\Entity\Category">
             <join-table name="product_category">

@@ -19,6 +19,8 @@ class Product
 
     private int $price;
 
+    private TaxCategory $taxCategory;
+
     private string $sku;
 
     /** @var Collection<int, Category> */
@@ -68,6 +70,18 @@ class Product
     public function setPrice(int $price): static
     {
         $this->price = $price;
+
+        return $this;
+    }
+
+    public function getTaxCategory(): TaxCategory
+    {
+        return $this->taxCategory;
+    }
+
+    public function setTaxCategory(TaxCategory $taxCategory): static
+    {
+        $this->taxCategory = $taxCategory;
 
         return $this;
     }
