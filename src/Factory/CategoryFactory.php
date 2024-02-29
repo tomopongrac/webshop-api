@@ -3,6 +3,7 @@
 namespace TomoPongrac\WebshopApiBundle\Factory;
 
 use TomoPongrac\WebshopApiBundle\Entity\Category;
+use TomoPongrac\WebshopApiBundle\Repository\CategoryRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;
