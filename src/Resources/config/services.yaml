@@ -6,3 +6,7 @@ services:
     TomoPongrac\WebshopApiBundle\Command\SeedCategoriesCommand:
         tags:
             - { name: 'console.command' }
+
+    TomoPongrac\WebshopApiBundle\Command\SeedTaxCategoriesCommand:
+        tags:
+            - { name: 'console.command' }
