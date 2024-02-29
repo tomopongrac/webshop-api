@@ -28,6 +28,11 @@ doctrine:
                 prefix: 'TomoPongrac\WebshopApiBundle\Entity'
                 alias: WebshopApiBundle
 ```
+5. In services.yaml file add the following:
+```yaml
+imports:
+    - { resource: '../vendor/tomopongrac/webshop-api/src/Resources/config/services.yaml' }
+```
 
 # How to run static analysis
 1. Run `composer phpstan`
