@@ -10,3 +10,7 @@ services:
     TomoPongrac\WebshopApiBundle\Command\SeedTaxCategoriesCommand:
         tags:
             - { name: 'console.command' }
+
+    TomoPongrac\WebshopApiBundle\Command\SeedProductsCommand:
+        tags:
+            - { name: 'console.command' }

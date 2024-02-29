@@ -50,7 +50,7 @@ final class ProductFactory extends ModelFactory
             'name' => self::faker()->text(180),
             'description' => self::faker()->text(180),
             'price' => self::faker()->numberBetween(1_00, 1000_00),
-            'sku' => self::faker()->uuid,
+            'sku' => self::faker()->uuid(),
             'taxCategory' => LazyValue::new(fn () => TaxCategoryFactory::createOne()),
         ];
     }
