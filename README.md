@@ -32,6 +32,10 @@ doctrine:
 ```yaml
 imports:
     - { resource: '../vendor/tomopongrac/webshop-api/src/Resources/config/services.yaml' }
+services:
+    TomoPongrac\WebshopApiBundle\Repository\:
+        resource: '../vendor/tomopongrac/webshop-api/src/Repository'
+        lazy: true
 ```
 
 # How to run static analysis

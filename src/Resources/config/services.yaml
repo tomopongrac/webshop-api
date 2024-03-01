@@ -14,3 +14,7 @@ services:
     TomoPongrac\WebshopApiBundle\Command\SeedProductsCommand:
         tags:
             - { name: 'console.command' }
+
+    TomoPongrac\WebshopApiBundle\Command\SeedPriceListProductCommand:
+        tags:
+            - { name: 'console.command' }

@@ -20,4 +20,15 @@ class ProductRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Product::class);
     }
+
+    public function findRandomProducts(int $limit): array
+    {
+        $connection = $this->getEntityManager()->getConnection();
+
+        $sql = 'SELECT * FROM product ORDER BY RAND() LIMIT '.$limit;
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->executeQuery();
+
+        return $result->fetchAllAssociative();
+    }
 }
