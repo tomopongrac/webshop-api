@@ -4,6 +4,7 @@ namespace TomoPongrac\WebshopApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
 use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Product;
 
@@ -66,5 +67,64 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         return $product;
+    }
+
+    public function getProducts(ListProductsQueryParameters $queryParameters): array
+    {
+        $offset = ((int) $queryParameters->getPage() - 1) * (int) $queryParameters->getLimit();
+
+        // Get the total products
+        $totalResultsQuery = $this->createQueryBuilder('p')
+            ->select('count(p.id)')
+            ->andWhere('p.publishedAt IS NOT NULL');
+
+        $totalResultsQuery->getQuery();
+
+        /** @var int $totalResults */
+        $totalResults = $totalResultsQuery->getQuery()->getSingleScalarResult();
+
+        // Get the products
+        $productsQuery = $this->createQueryBuilder('p')
+            ->andWhere('p.publishedAt IS NOT NULL');
+
+        /** @var Product[] $products */
+        $products = $productsQuery->setFirstResult($offset)
+            ->setMaxResults((int) $queryParameters->getLimit())
+            ->getQuery()
+            ->getResult();
+
+        // Get the product IDs
+        $productIds = array_map(function ($product) {
+            return $product->getId();
+        }, $products);
+
+        // Get priceListProducts for these products
+        /** @var PriceListProduct[] $priceListProducts */
+        $priceListProducts = $this->createQueryBuilder('p')
+            ->select('p, plp')
+            ->leftJoin('p.priceListProducts', 'plp')
+            ->andWhere('p.id IN (:productIds)')
+            ->setParameter('productIds', $productIds)
+            ->getQuery()
+            ->getResult();
+
+        // If the product was found, proceed with the minimum price
+        if (0 !== count($priceListProducts)) {
+            /** @var Product $product */
+            foreach ($priceListProducts as $product) {
+                // Retrieve all prices from priceListProducts
+                $prices = array_map(function ($priceListProduct) {
+                    return $priceListProduct->getPrice();
+                }, $product->getPriceListProducts()->toArray());
+
+                // Check if there are any prices before calculating the minimum
+                if (count($prices) > 0) {
+                    $min_price = min($prices);
+                    $product->setPrice($min_price);
+                }
+            }
+        }
+
+        return [$priceListProducts, $totalResults];
     }
 }
