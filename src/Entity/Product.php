@@ -38,9 +38,13 @@ class Product
 
     private ?\DateTimeInterface $publishedAt = null;
 
+    /** @var Collection<int, PriceListProduct> */
+    private Collection $priceListProducts;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->priceListProducts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -138,5 +142,27 @@ class Product
     public function setPublishedAt(?\DateTimeInterface $publishedAt): void
     {
         $this->publishedAt = $publishedAt;
+    }
+
+    /** @return Collection<int, PriceListProduct> */
+    public function getPriceListProducts(): Collection
+    {
+        return $this->priceListProducts;
+    }
+
+    public function addPriceListProduct(PriceListProduct $priceListProduct): static
+    {
+        if (!$this->priceListProducts->contains($priceListProduct)) {
+            $this->priceListProducts->add($priceListProduct);
+        }
+
+        return $this;
+    }
+
+    public function removePriceListProduct(PriceListProduct $priceListProduct): static
+    {
+        $this->priceListProducts->removeElement($priceListProduct);
+
+        return $this;
     }
 }

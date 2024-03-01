@@ -34,6 +34,8 @@
             </join-table>
         </many-to-many>
 
+        <one-to-many field="priceListProducts" target-entity="TomoPongrac\WebshopApiBundle\Entity\PriceListProduct" mapped-by="product"/>
+
         <lifecycle-callbacks>
             <lifecycle-callback type="prePersist" method="onCreate"/>
             <lifecycle-callback type="preUpdate" method="onUpdate"/>

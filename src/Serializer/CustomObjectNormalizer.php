@@ -23,7 +23,7 @@ class CustomObjectNormalizer implements NormalizerInterface
     ): array|string|int|float|bool|\ArrayObject|null {
         $data = $this->normalizer->normalize($object, $format, $context);
 
-        if ($object instanceof Product && isset($data['price'])) {
+        if ($object instanceof Product && is_array($data)) {
             $data['price'] = [
                 'amount' => number_format($object->getPrice() / 100, 2),
                 'currency' => 'EUR',

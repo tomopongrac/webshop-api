@@ -4,6 +4,7 @@ namespace TomoPongrac\WebshopApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Product;
 
 /**
@@ -30,5 +31,40 @@ class ProductRepository extends ServiceEntityRepository
         $result = $stmt->executeQuery();
 
         return $result->fetchAllAssociative();
+    }
+
+    public function getSingleProduct(int $productId): ?Product
+    {
+        // Fetching the main product with priceListProducts, categories, and taxCategory associations!
+        /** @var Product|null $product */
+        $product = $this->createQueryBuilder('p')
+            ->select('p, plp, c, t')
+            ->leftJoin('p.priceListProducts', 'plp')
+            ->leftJoin('p.categories', 'c')
+            ->leftJoin('p.taxCategory', 't')
+            ->andWhere('p.id = :productId')
+            ->andWhere('p.publishedAt IS NOT NULL')
+            ->setParameter('productId', $productId)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        // If the product was found, proceed with the minimum price
+        if (null !== $product) {
+            /** @var PriceListProduct[] $pricesListProducts */
+            $pricesListProducts = $product->getPriceListProducts()->toArray();
+
+            // Retrieve all prices from priceListProducts
+            $prices = array_map(function ($priceListProduct) {
+                return $priceListProduct->getPrice();
+            }, $pricesListProducts);
+
+            // Check if there are any prices before calculating the minimum
+            if (count($prices) > 0) {
+                $min_price = min($prices);
+                $product->setPrice($min_price);
+            }
+        }
+
+        return $product;
     }
 }
