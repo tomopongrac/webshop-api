@@ -15,7 +15,8 @@
     "require": {
         "php": "^8.2",
         "symfony/http-kernel": "^7.0",
-        "symfony/orm-pack": "^2.4"
+        "symfony/orm-pack": "^2.4",
+        "symfony/serializer": "^7.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^1.10",
