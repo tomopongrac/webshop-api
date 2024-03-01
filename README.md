@@ -27,6 +27,8 @@ doctrine:
                 dir: '%kernel.project_dir%/vendor/tomopongrac/webshop-api/config/doctrine'
                 prefix: 'TomoPongrac\WebshopApiBundle\Entity'
                 alias: WebshopApiBundle
+        resolve_target_entities:
+            TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface: 'App\Entity\User'
 ```
 5. In services.yaml file add the following:
 ```yaml
