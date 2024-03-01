@@ -39,6 +39,13 @@ services:
         resource: '../vendor/tomopongrac/webshop-api/src/Repository'
         lazy: true
 ```
+6. To routes.yaml file add the following:
+```yaml
+webshop_api_bundle:
+    resource: '../vendor/tomopongrac/webshop-api/src/'
+    type: attribute
+    prefix: /api/webshop
+```
 
 # How to run static analysis
 1. Run `composer phpstan`

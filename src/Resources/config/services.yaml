@@ -18,3 +18,11 @@ services:
     TomoPongrac\WebshopApiBundle\Command\SeedPriceListProductCommand:
         tags:
             - { name: 'console.command' }
+
+    TomoPongrac\WebshopApiBundle\Controller\:
+        resource: '../../../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    TomoPongrac\WebshopApiBundle\Serializer\CustomObjectNormalizer:
+        arguments: ['@serializer.normalizer.object']
+        tags: ['serializer.normalizer']

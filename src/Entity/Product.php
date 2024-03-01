@@ -6,13 +6,20 @@ namespace TomoPongrac\WebshopApiBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 class Product
 {
     use TimestampableTrait;
 
+    #[
+        Groups(['product:read'])
+    ]
     private ?int $id = null;
 
+    #[
+        Groups(['product:read'])
+    ]
     private string $name;
 
     private string $description;
@@ -24,6 +31,9 @@ class Product
     private string $sku;
 
     /** @var Collection<int, Category> */
+    #[
+        Groups(['product:read'])
+    ]
     private Collection $categories;
 
     private ?\DateTimeInterface $publishedAt = null;

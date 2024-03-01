@@ -6,6 +6,7 @@ namespace TomoPongrac\WebshopApiBundle\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 class Category
 {
@@ -13,6 +14,9 @@ class Category
 
     private ?int $id = null;
 
+    #[
+        Groups(['product:read'])
+    ]
     private string $name;
 
     private ?string $description = null;
