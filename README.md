@@ -46,6 +46,7 @@ webshop_api_bundle:
     type: attribute
     prefix: /api/webshop
 ```
+7. User entity must implement TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface
 
 # How to run static analysis
 1. Run `composer phpstan`
