@@ -13,12 +13,12 @@ class Product
     use TimestampableTrait;
 
     #[
-        Groups(['product:read'])
+        Groups(['product:read', 'product:list'])
     ]
     private ?int $id = null;
 
     #[
-        Groups(['product:read'])
+        Groups(['product:read', 'product:list'])
     ]
     private string $name;
 
@@ -32,7 +32,7 @@ class Product
 
     /** @var Collection<int, Category> */
     #[
-        Groups(['product:read'])
+        Groups(['product:read', 'product:list'])
     ]
     private Collection $categories;
 

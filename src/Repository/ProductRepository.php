@@ -5,6 +5,7 @@ namespace TomoPongrac\WebshopApiBundle\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
+use TomoPongrac\WebshopApiBundle\Entity\Category;
 use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Product;
 
@@ -69,7 +70,7 @@ class ProductRepository extends ServiceEntityRepository
         return $product;
     }
 
-    public function getProducts(ListProductsQueryParameters $queryParameters): array
+    public function getProducts(ListProductsQueryParameters $queryParameters, ?Category $category = null): array
     {
         $offset = ((int) $queryParameters->getPage() - 1) * (int) $queryParameters->getLimit();
 
@@ -77,6 +78,12 @@ class ProductRepository extends ServiceEntityRepository
         $totalResultsQuery = $this->createQueryBuilder('p')
             ->select('count(p.id)')
             ->andWhere('p.publishedAt IS NOT NULL');
+
+        if (null !== $category) {
+            $totalResultsQuery->leftJoin('p.categories', 'c')
+                ->andWhere('c.id = :categoryId')
+                ->setParameter('categoryId', $category->getId());
+        }
 
         $totalResultsQuery->getQuery();
 
@@ -86,6 +93,12 @@ class ProductRepository extends ServiceEntityRepository
         // Get the products
         $productsQuery = $this->createQueryBuilder('p')
             ->andWhere('p.publishedAt IS NOT NULL');
+
+        if (null !== $category) {
+            $productsQuery->leftJoin('p.categories', 'c')
+                ->andWhere('c.id = :categoryId')
+                ->setParameter('categoryId', $category->getId());
+        }
 
         /** @var Product[] $products */
         $products = $productsQuery->setFirstResult($offset)

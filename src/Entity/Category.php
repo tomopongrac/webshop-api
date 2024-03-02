@@ -15,7 +15,7 @@ class Category
     private ?int $id = null;
 
     #[
-        Groups(['product:read'])
+        Groups(['product:read', 'product:list'])
     ]
     private string $name;
 

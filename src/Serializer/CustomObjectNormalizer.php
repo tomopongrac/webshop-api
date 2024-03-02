@@ -30,6 +30,10 @@ class CustomObjectNormalizer implements NormalizerInterface
             ];
         }
 
+        if (is_array($context['groups']) && in_array('product:list', $context['groups'], true)) {
+            return $data;
+        }
+
         return ['data' => $data];
     }
 
