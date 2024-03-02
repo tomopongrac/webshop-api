@@ -23,7 +23,8 @@
         "phpstan/phpstan-strict-rules": "^1.5",
         "phpstan/phpstan-symfony": "^1.3",
         "friendsofphp/php-cs-fixer": "^3.50",
-        "zenstruck/foundry": "^1.36"
+        "zenstruck/foundry": "^1.36",
+        "symfony/security-bundle": "^7.0"
     },
     "scripts": {
         "cs-check": "vendor/bin/php-cs-fixer fix --dry-run --diff",
