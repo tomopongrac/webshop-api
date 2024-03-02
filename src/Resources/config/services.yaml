@@ -30,3 +30,6 @@ services:
     TomoPongrac\WebshopApiBundle\Serializer\CustomObjectNormalizer:
         arguments: ['@serializer.normalizer.object']
         tags: ['serializer.normalizer']
+
+    TomoPongrac\WebshopApiBundle\Service\:
+        resource: '../../../src/Service/*'
