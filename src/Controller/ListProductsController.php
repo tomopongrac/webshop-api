@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TomoPongrac\WebshopApiBundle\Controller;
 
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +13,7 @@ use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
 use TomoPongrac\WebshopApiBundle\DTO\PaginationResponse;
+use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 use TomoPongrac\WebshopApiBundle\Repository\ProductRepository;
 
 class ListProductsController
@@ -21,12 +23,16 @@ class ListProductsController
         private readonly SerializerInterface $serializer,
         private readonly RequestStack $requestStack,
         private readonly DenormalizerInterface $denormalizer,
+        private readonly Security $security,
     ) {
     }
 
     #[Route('/products', name: 'get_products', methods: ['GET'])]
     public function __invoke(): Response
     {
+        /** @var UserWebShopApiInterface $user */
+        $user = $this->security->getUser();
+
         $queryParameters = $this->requestStack->getCurrentRequest()?->query->all();
 
         $listProductsQueryParameters = $this->denormalizer->denormalize(
@@ -38,7 +44,7 @@ class ListProductsController
             ]
         );
 
-        $productsResponse = $this->productRepository->getProducts($listProductsQueryParameters);
+        $productsResponse = $this->productRepository->getProducts($listProductsQueryParameters, $user);
 
         $jsonResponse = (new PaginationResponse())
             ->setCurrentPage((int) $listProductsQueryParameters->getPage())

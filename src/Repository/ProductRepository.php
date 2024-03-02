@@ -81,7 +81,7 @@ class ProductRepository extends ServiceEntityRepository
         return $product;
     }
 
-    public function getProducts(ListProductsQueryParameters $queryParameters, ?Category $category = null): array
+    public function getProducts(ListProductsQueryParameters $queryParameters, ?UserWebShopApiInterface $user = null, ?Category $category = null): array
     {
         $offset = ((int) $queryParameters->getPage() - 1) * (int) $queryParameters->getLimit();
 
@@ -140,6 +140,17 @@ class ProductRepository extends ServiceEntityRepository
                 $prices = array_map(function ($priceListProduct) {
                     return $priceListProduct->getPrice();
                 }, $product->getPriceListProducts()->toArray());
+
+                // check if there is a contract price for the user
+                if (null !== $user) {
+                    $contractPrice = $this->contractListProductRepository->findContractPriceListForUserAndProduct(
+                        $user,
+                        $product
+                    );
+                    if (null !== $contractPrice) {
+                        $prices[] = $contractPrice->getPrice();
+                    }
+                }
 
                 // Check if there are any prices before calculating the minimum
                 if (count($prices) > 0) {
