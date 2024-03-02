@@ -8,6 +8,7 @@ use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
 use TomoPongrac\WebshopApiBundle\Entity\Category;
 use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Product;
+use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -19,8 +20,10 @@ use TomoPongrac\WebshopApiBundle\Entity\Product;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
+    public function __construct(
+        ManagerRegistry $registry,
+        private readonly ContractListProductRepository $contractListProductRepository,
+    ) {
         parent::__construct($registry, Product::class);
     }
 
@@ -35,7 +38,7 @@ class ProductRepository extends ServiceEntityRepository
         return $result->fetchAllAssociative();
     }
 
-    public function getSingleProduct(int $productId): ?Product
+    public function getSingleProduct(int $productId, ?UserWebShopApiInterface $user = null): ?Product
     {
         // Fetching the main product with priceListProducts, categories, and taxCategory associations!
         /** @var Product|null $product */
@@ -59,6 +62,14 @@ class ProductRepository extends ServiceEntityRepository
             $prices = array_map(function ($priceListProduct) {
                 return $priceListProduct->getPrice();
             }, $pricesListProducts);
+
+            // check if there is a contract price for the user
+            if (null !== $user) {
+                $contractPrice = $this->contractListProductRepository->findContractPriceListForUserAndProduct($user, $product);
+                if (null !== $contractPrice) {
+                    $prices[] = $contractPrice->getPrice();
+                }
+            }
 
             // Check if there are any prices before calculating the minimum
             if (count($prices) > 0) {
