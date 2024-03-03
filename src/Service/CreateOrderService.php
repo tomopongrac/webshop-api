@@ -10,6 +10,7 @@ use TomoPongrac\WebshopApiBundle\Entity\Order;
 use TomoPongrac\WebshopApiBundle\Entity\OrderProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Profile;
 use TomoPongrac\WebshopApiBundle\Entity\ShippingAddress;
+use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 use TomoPongrac\WebshopApiBundle\Repository\ProductRepository;
 
 class CreateOrderService
@@ -20,7 +21,7 @@ class CreateOrderService
     ) {
     }
 
-    public function createOrder(CreateOrderRequest $createOrderRequest): void
+    public function createOrder(CreateOrderRequest $createOrderRequest, ?UserWebShopApiInterface $user = null): void
     {
         $profile = (new Profile())
             ->setFirstName($createOrderRequest->getFirstName())
@@ -39,7 +40,7 @@ class CreateOrderService
             ->setTotalPrice(100);
 
         $productsIds = array_map(fn ($product) => $product->getProductId(), $createOrderRequest->getProducts());
-        $orderProducts = $this->productRepository->findProductsByIds($productsIds);
+        $orderProducts = $this->productRepository->findProductsByIds($productsIds, $user);
         foreach ($orderProducts as $productFromDb) {
             $quantity = array_filter($createOrderRequest->getProducts(), fn ($product) => $product->getProductId() === $productFromDb->getId())[0]->getQuantity();
 

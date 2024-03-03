@@ -9,6 +9,7 @@ use TomoPongrac\WebshopApiBundle\Entity\Category;
 use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
 use TomoPongrac\WebshopApiBundle\Entity\Product;
 use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
+use TomoPongrac\WebshopApiBundle\Service\ModifyPricesForProductsService;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -23,11 +24,12 @@ class ProductRepository extends ServiceEntityRepository
     public function __construct(
         ManagerRegistry $registry,
         private readonly ContractListProductRepository $contractListProductRepository,
+        private readonly ModifyPricesForProductsService $modifyPricesForProductsService,
     ) {
         parent::__construct($registry, Product::class);
     }
 
-    public function findProductsByIds(array $ids): array
+    public function findProductsByIds(array $ids, ?UserWebShopApiInterface $user = null): array
     {
         /** @var Product[] $products */
         $products = $this->createQueryBuilder('p')
@@ -35,6 +37,8 @@ class ProductRepository extends ServiceEntityRepository
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+
+        $this->modifyPricesForProductsService->modifyPricesForProducts($products, $user);
 
         return $products;
     }

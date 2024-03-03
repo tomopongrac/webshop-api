@@ -34,7 +34,7 @@ class CreateOrderController extends AbstractController
         /** @var UserWebShopApiInterface $user */
         $user = $this->security->getUser();
 
-        $this->createOrderService->createOrder($createOrderRequest);
+        $this->createOrderService->createOrder($createOrderRequest, $user);
 
         return new JsonResponse($this->serializer->serialize([], 'json', [
             'groups' => ['product:read'],
