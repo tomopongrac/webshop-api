@@ -5,51 +5,66 @@ declare(strict_types=1);
 namespace TomoPongrac\WebshopApiBundle\DTO;
 
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
+use TomoPongrac\WebshopApiBundle\Validator\OrderProductQuantityIsGreaterThatZero;
+use TomoPongrac\WebshopApiBundle\Validator\ProductExists;
 
 class CreateOrderRequest
 {
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank(),
+        Assert\Email()
     ]
     private string $email;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $firstName;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $lastName;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $phone;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $address;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $city;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $zip;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank()
     ]
     private string $country;
 
     #[
-        Groups(['createOrder:request'])
+        Groups(['createOrder:request']),
+        Assert\NotBlank(),
+        ProductExists(),
+        OrderProductQuantityIsGreaterThatZero()
     ]
     /** @var ProductInOrderRequest[] */
     private array $products;

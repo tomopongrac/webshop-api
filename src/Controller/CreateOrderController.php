@@ -11,9 +11,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraint;
 use TomoPongrac\WebshopApiBundle\DTO\CreateOrderRequest;
 use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 use TomoPongrac\WebshopApiBundle\Service\CreateOrderService;
+use TomoPongrac\WebshopApiBundle\Service\ValidatorService;
 
 class CreateOrderController extends AbstractController
 {
@@ -21,6 +23,7 @@ class CreateOrderController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
         private readonly CreateOrderService $createOrderService,
+        private readonly ValidatorService $validatorService,
     ) {
     }
 
@@ -30,6 +33,8 @@ class CreateOrderController extends AbstractController
         $createOrderRequest = $this->serializer->deserialize($request->getContent(), CreateOrderRequest::class, 'json', [
             'groups' => ['createOrder:request'],
         ]);
+
+        $this->validatorService->validate($createOrderRequest, [Constraint::DEFAULT_GROUP]);
 
         /** @var UserWebShopApiInterface $user */
         $user = $this->security->getUser();

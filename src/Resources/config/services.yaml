@@ -33,3 +33,6 @@ services:
 
     TomoPongrac\WebshopApiBundle\Service\:
         resource: '../../../src/Service/*'
+
+    TomoPongrac\WebshopApiBundle\Validator\:
+        resource: '../../../src/Validator/*'
