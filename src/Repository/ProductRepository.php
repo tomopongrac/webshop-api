@@ -194,6 +194,12 @@ class ProductRepository extends ServiceEntityRepository
                 ->setParameter('name', '%'.$filterProductsRequest->getFilters()->getName().'%');
         }
 
+        if (0 !== count($filterProductsRequest->getFilters()->getCategories())) {
+            $totalResultsQuery->leftJoin('p.categories', 'c')
+                ->andWhere('c.id IN (:categoryIds)')
+                ->setParameter('categoryIds', $filterProductsRequest->getFilters()->getCategories());
+        }
+
         $totalResultsQuery->getQuery();
 
         /** @var int $totalResults */
@@ -204,8 +210,14 @@ class ProductRepository extends ServiceEntityRepository
             ->andWhere('p.publishedAt IS NOT NULL');
 
         if (null !== $filterProductsRequest->getFilters()->getName()) {
-            $totalResultsQuery->andWhere('p.name LIKE :name')
+            $productsQuery->andWhere('p.name LIKE :name')
                 ->setParameter('name', '%'.$filterProductsRequest->getFilters()->getName().'%');
+        }
+
+        if (0 !== count($filterProductsRequest->getFilters()->getCategories())) {
+            $productsQuery->leftJoin('p.categories', 'c')
+                ->andWhere('c.id IN (:categoryIds)')
+                ->setParameter('categoryIds', $filterProductsRequest->getFilters()->getCategories());
         }
 
         /** @var Product[] $products */
