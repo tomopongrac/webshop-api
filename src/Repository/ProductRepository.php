@@ -289,6 +289,7 @@ class ProductRepository extends ServiceEntityRepository
         foreach ($products as $product) {
             if (isset($product['min_price']) && isset($product[0])) {
                 $product[0]->setPrice($product['min_price']);
+                $productsForReturn[] = $product[0];
             }
         }
 
