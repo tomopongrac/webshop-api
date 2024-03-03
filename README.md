@@ -48,6 +48,16 @@ webshop_api_bundle:
 ```
 7. User entity must implement TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface
 
+# How to seed the database
+1. Run following commands
+```bash
+php ./bin/console webshop-api:seed-categories 200
+php ./bin/console webshop-api:seed-tax-categories
+php ./bin/console webshop-api:seed-products 5000
+php ./bin/console webshop-api:seed-price-list-product 35
+php ./bin/console webshop-api:seed-contract-list-product 20
+```
+
 # How to run static analysis
 1. Run `composer phpstan`
 
