@@ -11,10 +11,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraint;
 use TomoPongrac\WebshopApiBundle\DTO\FilterProductsRequest;
 use TomoPongrac\WebshopApiBundle\DTO\PaginationResponse;
 use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 use TomoPongrac\WebshopApiBundle\Repository\ProductRepository;
+use TomoPongrac\WebshopApiBundle\Service\ValidatorService;
 
 class FilterProductsController extends AbstractController
 {
@@ -22,6 +24,7 @@ class FilterProductsController extends AbstractController
         private readonly SerializerInterface $serializer,
         private readonly Security $security,
         private readonly ProductRepository $productRepository,
+        private readonly ValidatorService $validatorService,
     ) {
     }
 
@@ -32,6 +35,9 @@ class FilterProductsController extends AbstractController
         $filterProductsRequest = $this->serializer->deserialize($request->getContent(), FilterProductsRequest::class, 'json', [
             'groups' => ['filterProducts:request'],
         ]);
+
+        $this->validatorService->validate($filterProductsRequest, [Constraint::DEFAULT_GROUP]);
+        $this->validatorService->validate($filterProductsRequest->getPagination(), [Constraint::DEFAULT_GROUP]);
 
         /** @var UserWebShopApiInterface $user */
         $user = $this->security->getUser();

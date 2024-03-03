@@ -5,16 +5,21 @@ declare(strict_types=1);
 namespace TomoPongrac\WebshopApiBundle\DTO;
 
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class PaginationInFilterProductsRequest
 {
     #[
-        Groups(['filterProducts:request'])
+        Groups(['filterProducts:request']),
+        Assert\NotBlank(),
+        Assert\NotNull()
     ]
     private int $page;
 
     #[
-        Groups(['filterProducts:request'])
+        Groups(['filterProducts:request']),
+        Assert\NotBlank(),
+        Assert\NotNull()
     ]
     private int $limit;
 

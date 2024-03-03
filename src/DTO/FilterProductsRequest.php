@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TomoPongrac\WebshopApiBundle\DTO;
 
 use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class FilterProductsRequest
 {
@@ -19,7 +20,8 @@ class FilterProductsRequest
     private OrderInFilterProductsRequest $order;
 
     #[
-        Groups(['filterProducts:request'])
+        Groups(['filterProducts:request']),
+        Assert\NotBlank()
     ]
     private PaginationInFilterProductsRequest $pagination;
 
