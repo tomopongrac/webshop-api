@@ -12,6 +12,9 @@ class Category
 {
     use TimestampableTrait;
 
+    #[
+        Groups(['product:read', 'product:list'])
+    ]
     private ?int $id = null;
 
     #[
