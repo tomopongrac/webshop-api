@@ -36,23 +36,37 @@ class CreateOrderService
 
         $order = (new Order())
             ->setProfile($profile)
-            ->setShippingAddress($shippingAddress)
-            ->setTotalPrice(100);
+            ->setShippingAddress($shippingAddress);
 
         $productsIds = array_map(fn ($product) => $product->getProductId(), $createOrderRequest->getProducts());
-        $orderProducts = $this->productRepository->findProductsByIds($productsIds, $user);
-        foreach ($orderProducts as $productFromDb) {
-            $quantity = array_filter($createOrderRequest->getProducts(), fn ($product) => $product->getProductId() === $productFromDb->getId())[0]->getQuantity();
+        $productsFromDb = $this->productRepository->findProductsByIds($productsIds, $user);
 
+        $orderTotalPrice = 0;
+        foreach ($productsFromDb as $productFromDb) {
+            $createOrderProductFromRequest = array_filter($createOrderRequest->getProducts(), fn ($product) => $product->getProductId() === $productFromDb->getId());
+
+            if (0 === count($createOrderProductFromRequest)) {
+                continue;
+            }
+
+            $quantity = array_pop($createOrderProductFromRequest)?->getQuantity();
+
+            $productPrice = $productFromDb->getPrice() * $quantity;
+            $taxAmount = (int) round($productFromDb->getTaxCategory()->getRate() * $productPrice);
+            $totalPrice = $productPrice + $taxAmount;
             $orderProduct = (new OrderProduct())
                 ->setProduct($productFromDb)
                 ->setQuantity($quantity)
-                ->setPrice($productFromDb->getPrice())
+                ->setPrice($productPrice)
                 ->setTaxRate($productFromDb->getTaxCategory()->getRate())
-                ->setTaxAmount((int) round($productFromDb->getTaxCategory()->getRate() * $productFromDb->getPrice()))
-                ->setTotalPrice($productFromDb->getPrice() * $quantity);
+                ->setTaxAmount($taxAmount)
+                ->setTotalPrice($totalPrice);
+
             $order->addProduct($orderProduct);
+            $orderTotalPrice += $totalPrice;
         }
+
+        $order->setTotalPrice($orderTotalPrice);
 
         $this->entityManager->persist($order);
         $this->entityManager->flush();
