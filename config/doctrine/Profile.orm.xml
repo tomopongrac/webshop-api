@@ -7,6 +7,7 @@
         <id name="id" type="integer" column="id">
             <generator strategy="AUTO"/>
         </id>
+        <field name="email" type="string" column="email" length="255" nullable="true" />
         <field name="firstName" type="string" column="firstName" length="100" nullable="false" />
         <field name="lastName" type="string" column="lastName" length="100" nullable="false" />
         <field name="phone" type="string" column="phone" length="30" nullable="false" />

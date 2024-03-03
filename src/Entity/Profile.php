@@ -10,6 +10,8 @@ class Profile
 
     private ?int $id = null;
 
+    private ?string $email = null;
+
     private string $firstName;
 
     private string $lastName;
@@ -23,9 +25,16 @@ class Profile
         return $this->id;
     }
 
-    public function setId(?int $id): void
+    public function getEmail(): ?string
     {
-        $this->id = $id;
+        return $this->email;
+    }
+
+    public function setEmail(?string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
     }
 
     public function getFirstName(): string
