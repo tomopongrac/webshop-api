@@ -16,7 +16,7 @@ class FiltersInFilterProductsRequest
     #[
         Groups(['filterProducts:request'])
     ]
-    private ?int $price = null;
+    private ?PricesInFilterProductsRequest $price = null;
 
     #[
         Groups(['filterProducts:request'])
@@ -35,12 +35,12 @@ class FiltersInFilterProductsRequest
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getPrice(): ?PricesInFilterProductsRequest
     {
         return $this->price;
     }
 
-    public function setPrice(?int $price): static
+    public function setPrice(?PricesInFilterProductsRequest $price): static
     {
         $this->price = $price;
 

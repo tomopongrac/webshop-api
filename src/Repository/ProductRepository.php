@@ -200,6 +200,16 @@ class ProductRepository extends ServiceEntityRepository
                 ->setParameter('categoryIds', $filterProductsRequest->getFilters()->getCategories());
         }
 
+        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters()->getPrice()->getMin()) {
+            $totalResultsQuery->andWhere('p.price >= :minPrice')
+                ->setParameter('minPrice', $filterProductsRequest->getFilters()->getPrice()->getMin());
+        }
+
+        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters()->getPrice()->getMax()) {
+            $totalResultsQuery->andWhere('p.price <=:maxPrice')
+                ->setParameter('maxPrice', $filterProductsRequest->getFilters()->getPrice()->getMax());
+        }
+
         $totalResultsQuery->getQuery();
 
         /** @var int $totalResults */
@@ -218,6 +228,18 @@ class ProductRepository extends ServiceEntityRepository
             $productsQuery->leftJoin('p.categories', 'c')
                 ->andWhere('c.id IN (:categoryIds)')
                 ->setParameter('categoryIds', $filterProductsRequest->getFilters()->getCategories());
+        }
+
+        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters(
+        )->getPrice()->getMin()) {
+            $productsQuery->andWhere('p.price >= :minPrice')
+                ->setParameter('minPrice', $filterProductsRequest->getFilters()->getPrice()->getMin());
+        }
+
+        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters(
+        )->getPrice()->getMax()) {
+            $productsQuery->andWhere('p.price <= :maxPrice')
+                ->setParameter('maxPrice', $filterProductsRequest->getFilters()->getPrice()->getMax());
         }
 
         /** @var Product[] $products */
