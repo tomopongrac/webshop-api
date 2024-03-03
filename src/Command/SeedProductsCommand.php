@@ -61,6 +61,7 @@ class SeedProductsCommand extends Command
             $proxyProduct = ProductFactory::createOne([
                 'categories' => [$categories[array_rand($categories)]],
                 'taxCategory' => $taxCategory,
+                'publishedAt' => 4 !== random_int(0, 4) ? new \DateTimeImmutable() : null,
             ]);
 
             $this->entityManager->persist($proxyProduct->object());
