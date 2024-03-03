@@ -4,6 +4,7 @@ namespace TomoPongrac\WebshopApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use TomoPongrac\WebshopApiBundle\DTO\FilterProductsRequest;
 use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
 use TomoPongrac\WebshopApiBundle\Entity\Category;
 use TomoPongrac\WebshopApiBundle\Entity\PriceListProduct;
@@ -177,5 +178,42 @@ class ProductRepository extends ServiceEntityRepository
         }
 
         return [$priceListProducts, $totalResults];
+    }
+
+    public function filterProducts(FilterProductsRequest $filterProductsRequest, ?UserWebShopApiInterface $user = null): array
+    {
+        $offset = ($filterProductsRequest->getPagination()->getPage() - 1) * $filterProductsRequest->getPagination()->getLimit();
+
+        // Get the total products
+        $totalResultsQuery = $this->createQueryBuilder('p')
+            ->select('count(p.id)')
+            ->andWhere('p.publishedAt IS NOT NULL');
+
+        if (null !== $filterProductsRequest->getFilters()->getName()) {
+            $totalResultsQuery->andWhere('p.name LIKE :name')
+                ->setParameter('name', '%'.$filterProductsRequest->getFilters()->getName().'%');
+        }
+
+        $totalResultsQuery->getQuery();
+
+        /** @var int $totalResults */
+        $totalResults = $totalResultsQuery->getQuery()->getSingleScalarResult();
+
+        // Get the products
+        $productsQuery = $this->createQueryBuilder('p')
+            ->andWhere('p.publishedAt IS NOT NULL');
+
+        if (null !== $filterProductsRequest->getFilters()->getName()) {
+            $totalResultsQuery->andWhere('p.name LIKE :name')
+                ->setParameter('name', '%'.$filterProductsRequest->getFilters()->getName().'%');
+        }
+
+        /** @var Product[] $products */
+        $products = $productsQuery->setFirstResult($offset)
+            ->setMaxResults($filterProductsRequest->getPagination()->getLimit())
+            ->getQuery()
+            ->getResult();
+
+        return [$products, $totalResults];
     }
 }
