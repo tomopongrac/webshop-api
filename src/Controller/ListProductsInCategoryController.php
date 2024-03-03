@@ -11,11 +11,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraint;
 use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
 use TomoPongrac\WebshopApiBundle\DTO\PaginationResponse;
 use TomoPongrac\WebshopApiBundle\Entity\Category;
 use TomoPongrac\WebshopApiBundle\Entity\UserWebShopApiInterface;
 use TomoPongrac\WebshopApiBundle\Repository\ProductRepository;
+use TomoPongrac\WebshopApiBundle\Service\ValidatorService;
 
 class ListProductsInCategoryController
 {
@@ -25,6 +27,7 @@ class ListProductsInCategoryController
         private readonly RequestStack $requestStack,
         private readonly DenormalizerInterface $denormalizer,
         private readonly Security $security,
+        private readonly ValidatorService $validatorService,
     ) {
     }
 
@@ -44,6 +47,9 @@ class ListProductsInCategoryController
                 'groups' => ['product:list-query-parameters'],
             ]
         );
+
+        $this->validatorService->validate($listProductsQueryParameters, [Constraint::DEFAULT_GROUP]);
+
         $productsResponse = $this->productRepository->getProducts($listProductsQueryParameters, $user, $category);
 
         $jsonResponse = (new PaginationResponse())
