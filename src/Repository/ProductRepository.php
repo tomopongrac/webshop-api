@@ -27,6 +27,18 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
+    public function findProductsByIds(array $ids): array
+    {
+        /** @var Product[] $products */
+        $products = $this->createQueryBuilder('p')
+            ->andWhere('p.id IN(:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+
+        return $products;
+    }
+
     public function findRandomProducts(int $limit): array
     {
         $connection = $this->getEntityManager()->getConnection();

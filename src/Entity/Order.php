@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace TomoPongrac\WebshopApiBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+
 class Order
 {
     use TimestampableTrait;
@@ -17,6 +20,14 @@ class Order
     private UserWebShopApiInterface $user;
 
     private int $totalPrice;
+
+    /** @var Collection<int, OrderProduct> */
+    private Collection $products;
+
+    public function __construct()
+    {
+        $this->products = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -67,6 +78,22 @@ class Order
     public function setTotalPrice(int $totalPrice): static
     {
         $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
+    /** @return Collection<int, OrderProduct> */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(OrderProduct $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products[] = $product;
+            $product->setOrder($this);
+        }
 
         return $this;
     }
