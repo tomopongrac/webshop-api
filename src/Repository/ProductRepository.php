@@ -3,6 +3,7 @@
 namespace TomoPongrac\WebshopApiBundle\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use TomoPongrac\WebshopApiBundle\DTO\FilterProductsRequest;
 use TomoPongrac\WebshopApiBundle\DTO\ListProductsQueryParameters;
@@ -184,39 +185,69 @@ class ProductRepository extends ServiceEntityRepository
     {
         $offset = ($filterProductsRequest->getPagination()->getPage() - 1) * $filterProductsRequest->getPagination()->getLimit();
 
-        // Get the total products
-        $totalResultsQuery = $this->createQueryBuilder('p')
-            ->select('count(p.id)')
-            ->andWhere('p.publishedAt IS NOT NULL');
+        $queryParameters = [];
+        $totalCountSql = 'SELECT COUNT(*) as count FROM (
+        SELECT
+            p.id,
+            COALESCE(MIN(plp.price), p.price) AS min_price
+        FROM
+            product p
+        LEFT JOIN price_list_product plp ON p.id = plp.product_id';
 
-        if (null !== $filterProductsRequest->getFilters()->getName()) {
-            $totalResultsQuery->andWhere('p.name LIKE :name')
-                ->setParameter('name', '%'.$filterProductsRequest->getFilters()->getName().'%');
+        if (0 !== count($filterProductsRequest->getFilters()->getCategories())) {
+            $totalCountSql .= ' LEFT JOIN product_category pc ON p.id = pc.product_id';
+        }
+
+        $totalCountSql .= ' WHERE p.published_at IS NOT NULL';
+
+        if (null !== $filterProductsRequest->getFilters()->getName() && '' !== $filterProductsRequest->getFilters(
+        )->getName()) {
+            $totalCountSql .= ' AND p.name LIKE :name';
+            $queryParameters['name'] = '%'.$filterProductsRequest->getFilters()->getName().'%';
         }
 
         if (0 !== count($filterProductsRequest->getFilters()->getCategories())) {
-            $totalResultsQuery->leftJoin('p.categories', 'c')
-                ->andWhere('c.id IN (:categoryIds)')
-                ->setParameter('categoryIds', $filterProductsRequest->getFilters()->getCategories());
+            $totalCountSql .= ' AND pc.category_id IN (:categoryIds)';
+            $queryParameters['categoryIds'] = $filterProductsRequest->getFilters()->getCategories();
         }
 
-        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters()->getPrice()->getMin()) {
-            $totalResultsQuery->andWhere('p.price >= :minPrice')
-                ->setParameter('minPrice', $filterProductsRequest->getFilters()->getPrice()->getMin());
+        $totalCountSql .= ' GROUP BY p.id';
+
+        if (null !== $filterProductsRequest->getFilters()->getPrice()) {
+            if (null !== $filterProductsRequest->getFilters()->getPrice()->getMin() || null !== $filterProductsRequest->getFilters()->getPrice()->getMax()) {
+                $totalCountSql .= ' HAVING ';
+                $havingQuery = [];
+                if (null !== $filterProductsRequest->getFilters()->getPrice()->getMin()) {
+                    $havingQuery[] = 'min_price >= :minPrice';
+                    $queryParameters['minPrice'] = $filterProductsRequest->getFilters()->getPrice()->getMin();
+                }
+                if (null !== $filterProductsRequest->getFilters()->getPrice()->getMax()) {
+                    $havingQuery[] = 'min_price <= :maxPrice';
+                    $queryParameters['maxPrice'] = $filterProductsRequest->getFilters()->getPrice()->getMax();
+                }
+                $totalCountSql .= implode(' AND ', $havingQuery);
+            }
         }
 
-        if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters()->getPrice()->getMax()) {
-            $totalResultsQuery->andWhere('p.price <=:maxPrice')
-                ->setParameter('maxPrice', $filterProductsRequest->getFilters()->getPrice()->getMax());
-        }
+        $totalCountSql .= ') as total';
 
-        $totalResultsQuery->getQuery();
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addScalarResult('count', 'count');
+        $nativeQuery = $this->getEntityManager()->createNativeQuery($totalCountSql, $rsm);
+
+        if (0 !== count($queryParameters)) {
+            foreach ($queryParameters as $key => $value) {
+                $nativeQuery->setParameter($key, $value);
+            }
+        }
 
         /** @var int $totalResults */
-        $totalResults = $totalResultsQuery->getQuery()->getSingleScalarResult();
+        $totalResults = $nativeQuery->getSingleScalarResult();
 
         // Get the products
         $productsQuery = $this->createQueryBuilder('p')
+            ->addSelect('COALESCE(MIN(plp.price), p.price) AS min_price')
+            ->leftJoin('p.priceListProducts', 'plp')
             ->andWhere('p.publishedAt IS NOT NULL');
 
         if (null !== $filterProductsRequest->getFilters()->getName()) {
@@ -232,14 +263,20 @@ class ProductRepository extends ServiceEntityRepository
 
         if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters(
         )->getPrice()->getMin()) {
-            $productsQuery->andWhere('p.price >= :minPrice')
+            $productsQuery->andHaving('min_price >= :minPrice')
                 ->setParameter('minPrice', $filterProductsRequest->getFilters()->getPrice()->getMin());
         }
 
         if (null !== $filterProductsRequest->getFilters()->getPrice() && null !== $filterProductsRequest->getFilters(
         )->getPrice()->getMax()) {
-            $productsQuery->andWhere('p.price <= :maxPrice')
+            $productsQuery->andHaving('min_price <= :maxPrice')
                 ->setParameter('maxPrice', $filterProductsRequest->getFilters()->getPrice()->getMax());
+        }
+
+        $productsQuery->groupBy('p.id');
+
+        if (null !== $filterProductsRequest->getOrder()->getBy() && null !== $filterProductsRequest->getOrder()->getDirection()) {
+            $productsQuery->orderBy('p.'.$filterProductsRequest->getOrder()->getBy(), $filterProductsRequest->getOrder()->getDirection());
         }
 
         /** @var Product[] $products */
@@ -248,6 +285,13 @@ class ProductRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
 
-        return [$products, $totalResults];
+        $productsForReturn = [];
+        foreach ($products as $product) {
+            if (isset($product['min_price']) && isset($product[0])) {
+                $product[0]->setPrice($product['min_price']);
+            }
+        }
+
+        return [$productsForReturn, $totalResults];
     }
 }
