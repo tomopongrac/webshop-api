@@ -24,6 +24,7 @@ class CreateOrderService
     public function createOrder(CreateOrderRequest $createOrderRequest, ?UserWebShopApiInterface $user = null): void
     {
         $profile = (new Profile())
+            ->setEmail($createOrderRequest->getEmail())
             ->setFirstName($createOrderRequest->getFirstName())
             ->setLastName($createOrderRequest->getLastName())
             ->setPhone($createOrderRequest->getPhone());
