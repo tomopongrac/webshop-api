@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TomoPongrac\WebshopApiBundle\Controller;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -30,7 +32,36 @@ class ListProductsController
     ) {
     }
 
-    #[Route('/products', name: 'get_products', methods: ['GET'])]
+    #[
+        Route('/products', name: 'get_products', methods: ['GET']),
+        OA\Get(
+            tags: ['Product'],
+            summary: 'List products',
+        ),
+        OA\Parameter(
+            name: 'page',
+            in: 'query',
+            description: 'Page number',
+            required: true,
+            schema: new OA\Schema(type: 'integer')
+        ),
+        OA\Parameter(
+            name: 'limit',
+            in: 'query',
+            description: 'Number of products per page',
+            required: true,
+            schema: new OA\Schema(type: 'integer')
+        ),
+        OA\Response(
+            response: 200,
+            description: 'Products found',
+            content: new Model(type: PaginationResponse::class, groups: ['product:list'])
+        ),
+        OA\Response(
+            response: 422,
+            description: 'Validation error'
+        )
+    ]
     public function __invoke(): Response
     {
         /** @var UserWebShopApiInterface $user */

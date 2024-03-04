@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TomoPongrac\WebshopApiBundle\Controller;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,7 +30,26 @@ class FilterProductsController extends AbstractController
     ) {
     }
 
-    #[Route('/products/filter', name: 'filter_products', methods: ['POST'])]
+    #[
+        Route('/products/filter', name: 'filter_products', methods: ['POST']),
+        OA\Post(
+            tags: ['Product'],
+            summary: 'Filter products',
+        ),
+        OA\RequestBody(
+            required: true,
+            content: new Model(type: FilterProductsRequest::class, groups: ['filterProducts:request'])
+        ),
+        OA\Response(
+            response: 200,
+            description: 'Products found',
+            content: new Model(type: PaginationResponse::class, groups: ['product:list'])
+        ),
+        OA\Response(
+            response: 422,
+            description: 'Validation error'
+        )
+    ]
     public function __invoke(Request $request): Response
     {
         /** @var FilterProductsRequest $filterProductsRequest */

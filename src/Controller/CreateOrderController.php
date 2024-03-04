@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace TomoPongrac\WebshopApiBundle\Controller;
 
+use Nelmio\ApiDocBundle\Annotation\Model;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -27,7 +29,25 @@ class CreateOrderController extends AbstractController
     ) {
     }
 
-    #[Route('/orders', name: 'create_order', methods: ['POST'])]
+    #[
+        Route('/orders', name: 'create_order', methods: ['POST']),
+        OA\Post(
+            tags: ['Order'],
+            summary: 'Create an order',
+        ),
+        OA\RequestBody(
+            required: true,
+            content: new Model(type: CreateOrderRequest::class, groups: ['createOrder:request'])
+        ),
+        OA\Response(
+            response: 201,
+            description: 'Order created',
+        ),
+        OA\Response(
+            response: 422,
+            description: 'Validation error'
+        )
+    ]
     public function __invoke(Request $request): Response
     {
         $createOrderRequest = $this->serializer->deserialize($request->getContent(), CreateOrderRequest::class, 'json', [
