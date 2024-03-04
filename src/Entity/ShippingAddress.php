@@ -18,7 +18,7 @@ class ShippingAddress
 
     private string $country;
 
-    private UserWebShopApiInterface $user;
+    private ?UserWebShopApiInterface $user = null;
 
     public function getId(): ?int
     {
@@ -73,12 +73,12 @@ class ShippingAddress
         return $this;
     }
 
-    public function getUser(): UserWebShopApiInterface
+    public function getUser(): ?UserWebShopApiInterface
     {
         return $this->user;
     }
 
-    public function setUser(UserWebShopApiInterface $user): static
+    public function setUser(?UserWebShopApiInterface $user): static
     {
         $this->user = $user;
 

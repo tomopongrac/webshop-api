@@ -17,7 +17,7 @@ class Order
 
     private Profile $profile;
 
-    private UserWebShopApiInterface $user;
+    private ?UserWebShopApiInterface $user = null;
 
     private int $totalPrice;
 
@@ -58,12 +58,12 @@ class Order
         return $this;
     }
 
-    public function getUser(): UserWebShopApiInterface
+    public function getUser(): ?UserWebShopApiInterface
     {
         return $this->user;
     }
 
-    public function setUser(UserWebShopApiInterface $user): static
+    public function setUser(?UserWebShopApiInterface $user): static
     {
         $this->user = $user;
 

@@ -36,7 +36,8 @@ class CreateOrderService
             ->setAddress($createOrderRequest->getAddress())
             ->setCity($createOrderRequest->getCity())
             ->setZip($createOrderRequest->getZip())
-            ->setCountry($createOrderRequest->getCountry());
+            ->setCountry($createOrderRequest->getCountry())
+            ->setUser($user);
 
         $order = (new Order())
             ->setProfile($profile)
@@ -65,6 +66,7 @@ class CreateOrderService
         );
 
         $order->setTotalPrice($orderTotalPrice);
+        $order->setUser($user);
 
         $this->entityManager->persist($order);
         $this->entityManager->flush();
