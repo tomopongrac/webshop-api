@@ -56,6 +56,7 @@ php ./bin/console webshop-api:seed-tax-categories
 php ./bin/console webshop-api:seed-products 5000
 php ./bin/console webshop-api:seed-price-list-product 35
 php ./bin/console webshop-api:seed-contract-list-product 20
+php ./bin/console webshop-api:seed-total-discount
 ```
 
 # How to run static analysis
