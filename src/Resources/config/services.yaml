@@ -23,6 +23,10 @@ services:
         tags:
             - { name: 'console.command' }
 
+    TomoPongrac\WebshopApiBundle\Command\SeedTotalDiscountCommand:
+        tags:
+            - { name: 'console.command' }
+
     TomoPongrac\WebshopApiBundle\Controller\:
         resource: '../../../src/Controller/'
         tags: ['controller.service_arguments']
